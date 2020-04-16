@@ -61,7 +61,6 @@ def post_user():
     return jsonify({"msg":"user is registered"})
 
 
-# плохо - меняется created_on
 @app.route("/user", methods =['PUT'])
 def put_user():
     if not request.is_json:
@@ -76,11 +75,10 @@ def put_user():
         user_check = user.check_password(data["password"])
         if user_check:
 # data["number_telephone"] add if necessary
-            user_change = User(name=data["name"],username=data['username'],email=data["email"])
-            user_change.set_password(data['password'])
-            db.session.delete(user)
-            db.session.commit()
-            db.session.add(user_change)
+#            user.number_telephone = data['number_telephone']
+            user.name = data["name"]
+            user.email = data["email"]
+            db.session.add(user)
             db.session.commit()
             return jsonify({"msg": "user data changed"})
     return jsonify({"msg": "Bad username or password", "error": 401}), 401

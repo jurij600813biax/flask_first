@@ -4,7 +4,7 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 
 class BaseConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY') or '00000000'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+#    SQLALCHEMY_TRACK_MODIFICATIONS = False
     CSRF_ENABLED = True
     JWT_SECRET_KEY = 'super-secret'
    
