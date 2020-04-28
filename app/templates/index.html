@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <p>Name: {{ name }}</p>
+    <!--Old form-->
+    <form url="http://127.0.0.1:5000/user" method="POST" enctype="multipart/form-data">
+        <input type="file" id="jurij-file" name="file2">
+        <input type="submit" id="submit" value="SEND"/>
+    </form>
+
+    <script>
+        // REST
+        function onResponse ( response ) {
+            console.log('RESPONSE: ', JSON.stringify(response));
+        }
+
+        function onClick() {
+            console.log('On Click Text!');
+
+            var formData = new FormData();
+            formData.append( 'file2', $( '#jurij-file' )[0].files[0] );
+
+            xhr = new XMLHttpRequest();
+
+            xhr.open( 'POST', 'http://127.0.0.1:5000/user', true );
+            xhr.onreadystatechange = onResponse;
+            xhr.send( formData );
+        }
+
+        $('#submit').click(onClick);
+
+    </script>
+
+</body>
+</html>

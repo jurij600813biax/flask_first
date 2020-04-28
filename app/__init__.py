@@ -1,9 +1,7 @@
 from flask import Flask
-from flask_migrate import Migrate, MigrateCommand
+from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from flask_sqlalchemy import SQLAlchemy
-from flask_script import Manager, Command, Shell
-from flask_login import LoginManager
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import (JWTManager, jwt_required, create_access_token,get_jwt_identity)
 from flask_bcrypt import Bcrypt
