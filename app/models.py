@@ -24,12 +24,6 @@ class User(db.Model):
     def check_password(self, password):
     	return bcrypt.check_password_hash(self.password_hash, password)
 
-class CreateInputSchema(Schema):
-    name = fields.Str(required=True, validate=Length(min=1,max=100))
-    username = fields.Str(required=True, validate=Length(min=1,max=50))
-    email = fields.Str(required=True, validate=Email())
-    number_telephone = fields.Int(required=True)
-    password = fields.Str(required=True, validate=Length(min=1,max=10))
 
 class Product(db.Model):
     __tablename__ = 'products'
