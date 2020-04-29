@@ -8,7 +8,8 @@ class BaseConfig:
     CSRF_ENABLED = True
     JWT_SECRET_KEY = 'super-secret'
     UPLOAD_FOLDER = '/home/jurij/flask_first/uploads'
-   
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True

@@ -2,11 +2,13 @@ import os
 from app import app, db
 from flask import jsonify
 from flask import render_template, request, redirect, url_for, flash, make_response, session
-from .models import User, Product, UserSchema, CreateInputSchema, CreateLoginSchema, CreateProductSchema
+from .models import User, Product, UserSchema,ProductSchema, CreateInputSchema, CreateLoginSchema, CreateProductSchema
 from flask_jwt_extended import (JWTManager, jwt_required, create_access_token,get_jwt_identity)
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
 
 user_schema = UserSchema()
+product_schema = ProductSchema()
 create_input_schema = CreateInputSchema()
 create_login_schema = CreateLoginSchema()
 create_product_schema = CreateProductSchema()
@@ -94,8 +96,6 @@ def put_user():
     return jsonify({"msg": "Bad username or password", "error": 401}), 401
 
 
-
-
 @app.route('/login', methods=['POST'])
 def login():
     if not request.is_json:
@@ -145,7 +145,35 @@ def post_product_photo():
         return jsonify("Photo OK")
     return jsonify("Format must not be json")
 
-@app.route('/product_input_multi', methods=['POST'])
+
+@app.route('/product_photo/<filename>', methods=['GET'])
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
+
+@app.route("/product/all", methods = ["GET"])
+def get_product_all():
+    all_records = Product.query.all()
+    list = []
+    for record in all_records:
+        list.append(record.product_code)
+    if request.is_json:
+        return jsonify({"msg":"all product_code", "data": list})
+    return "All products {}".format(list)
+
+
+@app.route("/product/<product_code>", methods =['DELETE'])
+def delete_product(product_code):
+    product = Product.query.filter_by(product_code=product_code).first()
+    if product is None:
+        return jsonify({"message": "product does not exist"}), 404
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({"message": "product deleted"}), 202
+
+
+@app.route('/product', methods=['POST'])
 def post_product_multi():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
@@ -170,8 +198,18 @@ def post_product_multi():
     db.session.commit()
     return jsonify("OK")
 
+@app.route("/product/<product_code>", methods=['GET'])
+def get_product(product_code):
+    product = Product.query.filter_by(product_code=product_code).first()
+    if request.is_json:
+        if product is None:
+            return jsonify({"msg": "product does not exist"})
+        result = product_schema.dump(product)
+        return jsonify({"data": result})
+    return ("not json")
 
-@app.route('/product_input_multi', methods=['PUT'])
+
+@app.route('/product', methods=['PUT'])
 def put_product_multi():
     if not request.is_json:
         return jsonify({"msg": "Missing JSON in request"}), 400
