@@ -68,7 +68,7 @@ class CreateProductSchema(Schema):
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'name','username','email','created_on','updated_on')
+        fields = ('id', 'name','username','number_telephone','email','created_on','updated_on')
 
 class ProductSchema(ma.ModelSchema):
     class Meta:
