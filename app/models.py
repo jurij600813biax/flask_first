@@ -38,6 +38,29 @@ class Product(db.Model):
     product_photo = db.Column(db.String(100))
 
 
+role_user = db.Table('role_users',
+    db.Column('adminrole_id', db.Integer, db.ForeignKey('admin_roles.id')),
+    db.Column('adminuser_id', db.Integer, db.ForeignKey('admin_users.id'))
+                     )
+
+class AdminRole(db.Model):
+    __tablename__ = 'admin_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    admin_role = db.Column(db.String(50))
+
+class AdminUser(db.Model):
+    __tablename__ = 'admin_users'
+    id = db.Column(db.Integer(), primary_key=True)
+    admin_user = db.Column(db.String(50), nullable=False, unique=True)
+    password_hash = db.Column(db.String(100), nullable=False)
+    adminroles = db.relationship('AdminRole', secondary=role_user, backref='admin_users')
+
+
+    def set_password(self, password):
+    	self.password_hash = bcrypt.generate_password_hash(password)
+
+
+
 
 class CreateLoginSchema(Schema):
     username = fields.Str(required=True, validate=Length(min=1,max=50))
