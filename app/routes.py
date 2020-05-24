@@ -2,16 +2,55 @@ import os
 from app import app, db
 from flask import jsonify
 from flask import render_template, request, redirect, url_for, flash, make_response, session
-from .models import User, Product, UserSchema,ProductSchema, CreateInputSchema, CreateLoginSchema, CreateProductSchema
+from .models import User, Product,AdminUser,AdminRole, UserSchema,ProductSchema, CreateInputSchema, CreateLoginSchema, CreateProductSchema
 from flask_jwt_extended import (JWTManager, jwt_required, create_access_token,get_jwt_identity)
 from werkzeug.utils import secure_filename
 from flask import send_from_directory
+from .forms import AdminUserForm, AdminUserAddForm
 
 user_schema = UserSchema()
 product_schema = ProductSchema()
 create_input_schema = CreateInputSchema()
 create_login_schema = CreateLoginSchema()
 create_product_schema = CreateProductSchema()
+
+@app.route('/admin', methods=['get', 'post'])
+def admin_login():
+    message = ''
+    form = AdminUserForm()
+    if form.validate_on_submit():
+        exist_admin_username = AdminUser.query.filter_by(admin_user=form.admin_username.data).first()
+        if exist_admin_username:
+            user_check =exist_admin_username.check_password(form.password.data)
+            if user_check:
+                return render_template('index.html')
+            message = 'Do you forgot password ?'
+            return render_template('contact.html', form=form, message=message)
+    return render_template('contact.html', form=form)
+
+@app.route('/admin/add', methods=['get','post'])
+def admin_add():
+    message = ''
+    form = AdminUserAddForm()
+    if form.validate_on_submit():
+        exist_admin_username = AdminUser.query.filter_by(admin_user=form.admin_username.data).first()
+        if not exist_admin_username:
+            new_admin_user = AdminUser(admin_user=form.admin_username.data)
+            new_admin_user.set_password(form.password.data)
+            new_admin_role = AdminRole(admin_role=form.role.data)
+            db.session.add(new_admin_user)
+            db.session.add(new_admin_role)
+            db.session.commit()
+            return render_template('index.html')
+        message = 'user already exists'
+        return render_template('contact.html', form=form, message=message)
+    return render_template('contact.html', form=form)
+
+
+
+
+
+
 
 
 @app.route("/")
